@@ -3,27 +3,45 @@ import {test} from 'node:test';
 
 import {familyOf, mapBackground, mapBorder, mapForeground, mapShadow} from '../src/palette';
 
-test('white page becomes true black', () => {
-    assert.equal(mapBackground({h: 0, s: 0, l: 1, a: 1}).l, 0);
+test('white and black pages both become a night sky, not true black', () => {
+    for (const l of [0, 1]) {
+        const page = mapBackground({h: 0, s: 0, l, a: 1}).l;
+        assert.ok(page >= 0.05 && page < 0.08, `page ${l}`);
+    }
 });
 
-test('no neutral surface is lighter than night sky, light or dark', () => {
+test('no neutral surface is lighter than the top surface tier, light or dark', () => {
     for (let l = 0; l <= 1; l += 0.05) {
-        assert.ok(mapBackground({h: 0, s: 0, l, a: 1}).l <= 0.1 + 1e-9, `grey ${l}`);
+        assert.ok(mapBackground({h: 0, s: 0, l, a: 1}).l <= 0.25 + 1e-9, `grey ${l}`);
     }
 });
 
 test('light greys stay apart as raised tiers', () => {
     const page = mapBackground({h: 0, s: 0, l: 1, a: 1}).l;
     const card = mapBackground({h: 0, s: 0, l: 0.96, a: 1}).l;
-    assert.ok(card - page > 0.02);
+    const panel = mapBackground({h: 0, s: 0, l: 0.92, a: 1}).l;
+    assert.ok(card - page > 0.04);
+    assert.ok(panel - card > 0.015);
+});
+
+test('a dark site keeps its own surface steps', () => {
+    // claude.ai dark: sidebar, page, card
+    const [side, page, card] = [0.12, 0.145, 0.185].map((l) => mapBackground({h: 60, s: 0.03, l, a: 1}).l);
+    assert.ok(page - side >= 0.018);
+    assert.ok(card - page >= 0.018);
+});
+
+test('a structure line is clearly lighter than the top surface tier', () => {
+    for (const l of [0, 0.5, 0.9, 1]) {
+        assert.ok(mapBorder({h: 0, s: 0, l, a: 1}).l >= 0.25 + 0.11, `line ${l}`);
+    }
 });
 
 test('a dark blue-grey from a site dark theme is a neutral indigo surface', () => {
     // GitHub dark canvas #0d1117
     const out = mapBackground({h: 216, s: 0.28, l: 0.07, a: 1});
     assert.equal(out.h, 247);
-    assert.ok(out.l < 0.05);
+    assert.ok(out.l < 0.12);
 });
 
 test('hue families: red is pink, green and blue are cyan, violet is indigo, yellow is ice', () => {

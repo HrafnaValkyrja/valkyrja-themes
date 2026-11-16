@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Valkyrja Themes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turns every website into the Valkyrja Night palette: true black, indigo structure, cyan accents.",
   "browser_specific_settings": {
     "gecko": {

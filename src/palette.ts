@@ -64,8 +64,12 @@ function clamp(x: number, min: number, max: number): number {
 }
 
 const SURFACE_SATURATION = 0.45;
-const MAX_NEUTRAL_BG_LIGHTNESS = 0.1;
-const MAX_ACCENT_BG_LIGHTNESS = 0.28;
+// Surface steps follow her Firefox theme (#0a0818 fields, #131029 frame) and the Argus themes (surfaces up to about 0.2).
+const PAGE_BG_LIGHTNESS = 0.065;
+const DARK_FLOOR_LIGHTNESS = 0.05;
+const MAX_NEUTRAL_BG_LIGHTNESS = 0.25;
+const MAX_ACCENT_BG_LIGHTNESS = 0.32;
+const MIN_ACCENT_BG_LIGHTNESS = 0.12;
 
 /** Backgrounds: neutrals fall to black with a night-sky tint; saturated fills become dim palette fills. */
 export function mapBackground({h, s, l, a}: HSLA): HSLA {
@@ -76,25 +80,27 @@ export function mapBackground({h, s, l, a}: HSLA): HSLA {
     const isFaintTint = l > 0.85 && s < 0.25;
     const isNeutral = s < 0.12 || isPaleBlue || isDarkTint || isFaintTint;
     if (isNeutral) {
-        // Light pages: white is the page (black); each step of grey is a raised tier (#05040c, #0a0818, #131029).
-        // The square root keeps near-white greys apart, which a straight line would crush into black.
+        // Light pages: white is the page (near black); each step of grey is a clearly raised tier.
+        // The square root keeps near-white greys apart, which a straight line would crush together.
+        // Nothing is true black: the darkest ground is the night sky of her browser theme (#0a0818).
+        // Dark pages keep most of their own lightness, so the site's own surface steps stay visible.
         const lx = isDark ?
-            scale(l, 0, 0.5, 0, MAX_NEUTRAL_BG_LIGHTNESS) :
-            MAX_NEUTRAL_BG_LIGHTNESS * Math.sqrt(clamp((1 - l) / 0.5, 0, 1));
+            (l < 0.25 ? DARK_FLOOR_LIGHTNESS + l * 0.75 : scale(l, 0.25, 0.5, 0.2375, MAX_NEUTRAL_BG_LIGHTNESS)) :
+            PAGE_BG_LIGHTNESS + (MAX_NEUTRAL_BG_LIGHTNESS - PAGE_BG_LIGHTNESS) * Math.sqrt(clamp((1 - l) / 0.5, 0, 1));
         return {h: HUE.indigo, s: SURFACE_SATURATION, l: lx, a};
     }
     // Warm fills (orange and yellow bars, banners) become indigo: ice is a text colour, and as a fill it reads as dull slate.
     const family = familyOf(h) === 'ice' ? 'indigo' : familyOf(h);
     const lx = isDark ?
         scale(l, 0, 0.5, 0, MAX_ACCENT_BG_LIGHTNESS) :
-        scale(l, 0.5, 1, MAX_ACCENT_BG_LIGHTNESS, 0.05);
+        scale(l, 0.5, 1, MAX_ACCENT_BG_LIGHTNESS, MIN_ACCENT_BG_LIGHTNESS);
     const sx = family === 'indigo' ? Math.min(s, 0.63) : family === 'ice' ? Math.min(s, 0.5) : s;
     return {h: HUE[family], s: sx, l: lx, a};
 }
 
 const TEXT_LIGHTNESS = 0.91;
 const TEXT_SATURATION = 0.56;
-const MIN_TEXT_LIGHTNESS = 0.6;
+const MIN_TEXT_LIGHTNESS = 0.68;
 
 /** Text: neutrals become the body text colour (dimmer for greys); saturated text becomes a bright palette colour. */
 export function mapForeground({h, s, l, a}: HSLA): HSLA {
@@ -132,11 +138,11 @@ function liftAlpha(a: number | undefined): number | undefined {
 export function mapBorder({h, s, l, a}: HSLA): HSLA {
     const isNeutral = l < 0.2 || s < 0.24;
     if (isNeutral) {
-        return {h: HUE.indigo, s: 0.5, l: scale(l, 0, 1, 0.42, 0.22), a: liftAlpha(a)};
+        return {h: HUE.indigo, s: 0.55, l: scale(l, 0, 1, 0.56, 0.36), a: liftAlpha(a)};
     }
     const family = familyOf(h);
     const sx = family === 'indigo' ? 0.63 : family === 'ice' ? 0.6 : 1;
-    return {h: HUE[family], s: sx, l: scale(l, 0, 1, 0.62, 0.38), a};
+    return {h: HUE[family], s: sx, l: scale(l, 0, 1, 0.66, 0.46), a};
 }
 
 /**
