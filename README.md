@@ -39,3 +39,7 @@ Version 0.1.0, not yet on addons.mozilla.org.
 ## Licence
 
 MPL-2.0 for this project's own code (`LICENSE`). The engine and its site fixes list are MIT, the bundled fonts are OFL 1.1; see `THIRD-PARTY.md`.
+
+## Updates
+
+The installed add-on updates itself: Firefox reads `updates.json` on the main branch, which names the newest signed file (a release asset on this repo).

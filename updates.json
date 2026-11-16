@@ -1,0 +1,13 @@
+{
+  "addons": {
+    "valkyrja-themes@hrafnavalkyrja.github.io": {
+      "updates": [
+        {
+          "version": "0.1.4",
+          "update_link": "https://github.com/HrafnaValkyrja/valkyrja-themes/releases/download/v0.1.4/valkyrja-themes-0.1.4.xpi",
+          "update_hash": "sha256:321572580fdd39973f03d635163027a762723016c34324a8c8760fd93eb7ed9e"
+        }
+      ]
+    }
+  }
+}
