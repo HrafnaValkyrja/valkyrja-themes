@@ -1,0 +1,15 @@
+{
+  "name": "valkyrja-themes",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "test": "esbuild tests/*.test.ts --bundle --platform=node --format=esm --outdir=dist/tests --out-extension:.js=.mjs --log-level=warning && node --test dist/tests/*.mjs"
+  }
+}
