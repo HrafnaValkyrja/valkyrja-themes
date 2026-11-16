@@ -42,7 +42,8 @@ export type Family = 'pink' | 'ice' | 'cyan' | 'indigo';
  */
 export function familyOf(h: number): Family {
     const hue = ((h % 360) + 360) % 360;
-    if (hue >= 335 || hue < 20) {
+    // Red stops at 12: brand oranges and clay tones (hue 13 to 25) are accents, not errors.
+    if (hue >= 335 || hue < 12) {
         return 'pink';
     }
     if (hue < 70) {

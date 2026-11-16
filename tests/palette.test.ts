@@ -29,6 +29,7 @@ test('a dark blue-grey from a site dark theme is a neutral indigo surface', () =
 test('hue families: red is pink, green and blue are cyan, violet is indigo, yellow is ice', () => {
     assert.equal(familyOf(0), 'pink');
     assert.equal(familyOf(350), 'pink');
+    assert.equal(familyOf(15), 'ice');
     assert.equal(familyOf(45), 'ice');
     assert.equal(familyOf(130), 'cyan');
     assert.equal(familyOf(210), 'cyan');
