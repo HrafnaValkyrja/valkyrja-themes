@@ -80,4 +80,12 @@ function applyChromeTheme(): void {
 }
 
 browser.runtime.onInstalled.addListener(applyChromeTheme);
+
+// First run: Firefox grants the all-sites permission at install unless the person unticked it.
+// Without it nothing can be coloured, so open the switch page, whose button asks for it.
+browser.runtime.onInstalled.addListener(async ({reason}: {reason: string}) => {
+    if (reason === 'install' && !(await browser.permissions.contains({origins: ['<all_urls>']}))) {
+        browser.tabs.create({url: browser.runtime.getURL('popup.html')});
+    }
+});
 browser.runtime.onStartup.addListener(applyChromeTheme);
