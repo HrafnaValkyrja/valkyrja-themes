@@ -1,0 +1,8 @@
+/* google search: shapes only; colours come from the colour engine. */
+
+/* AI Mode: left rail edge (CHURN: jsname) */
+body[data-dt="1"] [jsname="NlVIob"] { box-shadow: inset -1px 0 0 var(--vk-line) !important; }
+/* AI Mode: round "+" (add files/tools) button: 1px ring (CHURN: class) */
+body[data-dt="1"] .A918Hf::after { box-shadow: inset 0 0 0 1px var(--vk-line) !important; }
+/* Shopping: product ad cards: 1px ring; .pla-unit is Google's long-lived product-ad class */
+body[data-dt="1"] .pla-unit[style*="background"] { box-shadow: inset 0 0 0 1px var(--vk-line) !important; }

@@ -15,3 +15,7 @@ Changes made to the copied files are marked in the source with a `Valkyrja chang
 `engine/config/dynamic-theme-fixes.config` is Dark Reader's per-site fixes list, unchanged.
 
 Everything outside `engine/` is original to this project and licensed under MPL-2.0.
+
+## Fonts
+
+`assets/fonts/` holds unmodified Barlow, Chakra Petch and IBM Plex Mono files, each under the SIL Open Font License 1.1 (see the `OFL-*.txt` files beside them).

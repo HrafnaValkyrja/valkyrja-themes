@@ -7,6 +7,7 @@ import {createOrUpdateDynamicTheme, createOrUpdateDynamicThemeInternal, removeDy
 
 import {PALETTE} from './palette';
 import {isOnFor, loadSettings, onSettingsChanged} from './settings';
+import {siteCSS} from './sites';
 
 declare const browser: any;
 
@@ -73,10 +74,23 @@ function loadFixes(): Promise<DynamicThemeFix[] | null> {
     return fixes!;
 }
 
-function apply(list: DynamicThemeFix[] | null): void {
+const EMPTY_FIX: DynamicThemeFix = {url: ['*'], invert: [], css: '', ignoreInlineStyle: [], ignoreImageAnalysis: [], ignoreCSSUrl: []} as DynamicThemeFix;
+
+// Adds this site's shapes and fonts (if it has a module) to the style sheet the engine injects last.
+function withSiteModule(list: DynamicThemeFix[] | null): DynamicThemeFix[] | null {
+    const css = siteCSS(location.hostname, browser.runtime.getURL('fonts'));
+    if (!css) {
+        return list;
+    }
+    const [common, ...rest] = list ?? [EMPTY_FIX];
+    return [{...common, css: `${common.css ?? ''}\n${css}`}, ...rest];
+}
+
+function apply(fixesList: DynamicThemeFix[] | null): void {
     if (!running) {
         return;
     }
+    const list = withSiteModule(fixesList);
     if (list) {
         createOrUpdateDynamicTheme(theme, list, isIFrame);
     } else {

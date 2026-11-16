@@ -55,5 +55,18 @@
   "action": {
     "default_title": "Valkyrja Themes",
     "default_popup": "popup.html"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "fonts/*.ttf"
+      ],
+      "matches": [
+        "https://claude.ai/*",
+        "https://github.com/*",
+        "https://*.github.com/*",
+        "https://www.google.com/*"
+      ]
+    }
+  ]
 }

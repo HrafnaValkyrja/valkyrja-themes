@@ -1,0 +1,8 @@
+/* Bundled OFL 1.1 fonts (unmodified upstream files). No local() source: a sandboxed Firefox can answer a local name with a different font. __VK_FONTS__ is replaced at run time. */
+@font-face { font-family: "Barlow"; font-weight: 400; src: url("__VK_FONTS__/Barlow-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Barlow"; font-weight: 500; src: url("__VK_FONTS__/Barlow-Medium.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Barlow"; font-weight: 600 700; src: url("__VK_FONTS__/Barlow-SemiBold.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Chakra Petch"; font-weight: 400 700; src: url("__VK_FONTS__/ChakraPetch-SemiBold.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 400; src: url("__VK_FONTS__/IBMPlexMono-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 400; font-style: italic; src: url("__VK_FONTS__/IBMPlexMono-Italic.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 600 700; src: url("__VK_FONTS__/IBMPlexMono-SemiBold.ttf") format("truetype"); font-display: swap; }

@@ -27,6 +27,7 @@ await build({
     target: 'firefox142',
     define,
     alias: {'@plus': path.join(root, 'engine/stubs'), 'background': path.join(root, 'engine/background')},
+    loader: {'.css': 'text'},
     legalComments: 'none',
     logLevel: 'info',
 });
@@ -36,3 +37,4 @@ for (const file of ['manifest.json', 'popup.html']) {
 }
 fs.copyFileSync(path.join(root, 'engine/LICENSE'), path.join(out, 'ENGINE-LICENSE.txt'));
 fs.copyFileSync(path.join(root, 'engine/config/dynamic-theme-fixes.config'), path.join(out, 'dynamic-theme-fixes.config'));
+fs.cpSync(path.join(root, 'assets/fonts'), path.join(out, 'fonts'), {recursive: true});

@@ -1,0 +1,63 @@
+/* claude.ai: shapes and type only; colours come from the colour engine. */
+
+/* site font tokens */
+:root, .cds-root, [data-mode], .cds-dark-scope {
+  --font-anthropic-sans: "Barlow", system-ui, sans-serif !important;
+  --font-anthropic-serif: "Barlow", system-ui, sans-serif !important;
+  --font-anthropic-mono: "IBM Plex Mono", ui-monospace, monospace !important;
+  --cds-font-mono: "IBM Plex Mono", ui-monospace, monospace !important;
+}
+
+h1, h2, h3, .font-display { font-family: "Chakra Petch", "Barlow", sans-serif !important; letter-spacing: .01em; }
+
+/* Angular cuts (design rule): code cards, dialogs, menus. Top-left + bottom-right corners.
+   The edge must follow the cut with no gap (clip-path alone cuts the border off the diagonal). */
+
+/* code card (pre's wrapper): clip, then redraw the whole edge as a top-layer frame (::after, even-odd ring
+   = outer cut outline minus the same outline inset 1px; 0.414px = (sqrt2 - 1) keeps the diagonal 1px thick). */
+:has(> pre code):not(.prose, .standard-markdown, .font-claude-response), :has(> .code-block__code) {
+  --vk-cut: 10px;
+  position: relative;
+  border-radius: 0 !important;
+  border-width: 0 !important;  /* frame drawn by ::after inside the padding box (the card's overflow:hidden clips the border area) */
+  clip-path: polygon(var(--vk-cut) 0, 100% 0, 100% calc(100% - var(--vk-cut)), calc(100% - var(--vk-cut)) 100%, 0 100%, 0 var(--vk-cut));
+}
+:has(> pre code):not(.prose, .standard-markdown, .font-claude-response)::after, :has(> .code-block__code)::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: var(--vk-line);
+  clip-path: polygon(evenodd,
+    var(--vk-cut) 0, 100% 0, 100% calc(100% - var(--vk-cut)), calc(100% - var(--vk-cut)) 100%, 0 100%, 0 var(--vk-cut), var(--vk-cut) 0,
+    calc(var(--vk-cut) + .414px) 1px, 1px calc(var(--vk-cut) + .414px), 1px calc(100% - 1px), calc(100% - var(--vk-cut) - .414px) calc(100% - 1px),
+    calc(100% - 1px) calc(100% - var(--vk-cut) - .414px), calc(100% - 1px) 1px, calc(var(--vk-cut) + .414px) 1px);
+}
+
+/* the inner pre's own rounded border would sit inside the cut card: flatten it */
+:has(> pre code):not(.prose, .standard-markdown, .font-claude-response) > pre { border-radius: 0 !important; border: 0 !important; }
+
+/* dialogs and menus: may be fixed/absolute, so no ::after. Keep the 1px border for the straight sides
+   and paint the two diagonals as corner gradients exactly on the cut line. */
+[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"] {
+  --vk-cut: 14px;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--vk-line) !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(135deg, transparent calc(50% - .1px), var(--vk-line) calc(50% - .1px), var(--vk-line) calc(50% + 1.3px), transparent calc(50% + 1.3px)) top left / var(--vk-cut) var(--vk-cut) no-repeat border-box,
+    linear-gradient(315deg, transparent calc(50% - .1px), var(--vk-line) calc(50% - .1px), var(--vk-line) calc(50% + 1.3px), transparent calc(50% + 1.3px)) bottom right / var(--vk-cut) var(--vk-cut) no-repeat border-box,
+    var(--vk-surface) !important;
+  clip-path: polygon(var(--vk-cut) 0, 100% 0, 100% calc(100% - var(--vk-cut)), calc(100% - var(--vk-cut)) 100%, 0 100%, 0 var(--vk-cut));
+}
+
+/* Buttons share the angular/square shape language (2px radius); switches keep their track shape */
+button:not([role="switch"]), [role="button"]:not([role="switch"]),
+[role="alert"], [role="status"], [class*="bg-danger"], [class*="bg-warning"] { border-radius: 2px !important; }  /* banners too (secondary: no cut) */
+
+/* composer: plain square, no cut, no rounding. Wrapper depth unconfirmed: square a few levels. */
+[data-testid="composer"], :has(> [contenteditable="true"]), :has(> * > [contenteditable="true"]), fieldset:has([contenteditable="true"]) > div {
+  border-radius: 0 !important;
+}
+
+/* inline code: flat, no outline */
+:not(pre) > code { border: 0 !important; box-shadow: none !important; }
+.hljs-comment, .hljs-quote { font-style: italic; }

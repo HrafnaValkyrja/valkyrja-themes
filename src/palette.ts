@@ -22,6 +22,7 @@ export interface HSLA {
 export const PALETTE = {
     black: '#000000',
     nightSky: '#131029',
+    surface: '#0a0818',
     indigo: '#5b4bd6',
     cyan: '#4fe0ff',
     ice: '#8fd3ff',

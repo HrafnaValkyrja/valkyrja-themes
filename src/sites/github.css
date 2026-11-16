@@ -1,0 +1,9 @@
+/* github.com: shapes and type only; colours come from the colour engine. */
+
+/* site font tokens */
+:root, [data-color-mode], [data-light-theme], [data-dark-theme] {
+  --fontStack-system: "Barlow", system-ui, sans-serif !important;
+  --fontStack-sansSerif: "Barlow", system-ui, sans-serif !important;
+  --fontStack-sansSerifDisplay: "Chakra Petch", "Barlow", sans-serif !important;
+  --fontStack-monospace: "IBM Plex Mono", ui-monospace, monospace !important;
+}
