@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <title>Valkyrja Themes</title>
 <style>
-:root { color-scheme: dark; }
-body { margin: 0; padding: 14px 16px; width: 260px; background: #000; color: #dce8f5; font: 14px/1.4 system-ui, sans-serif; }
-h1 { margin: 0 0 10px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #4fe0ff; }
-label { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #5b4bd659; cursor: pointer; }
+:root { color-scheme: dark; --base: #000000; --s2: #0e1015; --line: #2c3340; --lineHi: #556384; --text: #b9c0cf; --accent: #6a93d8; }
+body { margin: 0; padding: 14px 16px; width: 260px; background: var(--base); color: var(--text); font: 14px/1.4 system-ui, sans-serif; }
+h1 { margin: 0 0 10px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+label { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; }
 label span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-input[type=checkbox] { accent-color: #4fe0ff; width: 16px; height: 16px; }
-button { margin-top: 10px; width: 100%; padding: 8px; background: #131029; color: #4fe0ff; border: 1px solid #5b4bd6; font: inherit; cursor: pointer; }
-button:hover { background: #5b4bd640; }
+input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+select, button { background: var(--s2); color: var(--text); border: 1px solid var(--lineHi); font: inherit; cursor: pointer; }
+select { padding: 4px 6px; }
+button { margin-top: 10px; width: 100%; padding: 8px; color: var(--accent); }
+button:hover { border-color: var(--accent); }
 [hidden] { display: none; }
 </style>
 </head>
@@ -19,6 +21,7 @@ button:hover { background: #5b4bd640; }
 <h1>Valkyrja Themes</h1>
 <label><span>On everywhere</span><input type="checkbox" id="enabled"></label>
 <label id="site-row" hidden><span id="site-name"></span><input type="checkbox" id="site"></label>
+<label><span>Theme</span><select id="theme"></select></label>
 <button id="grant" hidden>Allow on all websites</button>
 <script src="popup.js"></script>
 </body>

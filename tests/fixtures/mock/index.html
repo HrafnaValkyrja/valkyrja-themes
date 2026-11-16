@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Mock light site</title>
+<style>
+body{margin:0;background:#fff;color:#1a1a1a;font:14px/1.4 system-ui,sans-serif;display:flex;height:400px}
+nav{width:150px;background:#f7f7f8;border-right:1px solid #e5e5e5;padding:10px}
+nav div{padding:6px 8px}.new{background:#2563eb;color:#fff;font-weight:600}.cur{background:#dcdce0;margin-top:8px}
+.dim{color:#666}.dimmer{color:#808080;font-size:12px}
+main{flex:1;padding:12px}.bubble{margin-left:120px;background:#ececef;padding:8px 10px}
+a{color:#1a73e8}.visited{color:#8250df}
+pre{background:#f7f7f8;border:1px solid #8c959f;padding:8px;font-size:12px;margin:0}
+.k{color:#cf222e}.v{color:#0e7490}.s{color:#1a7f37}.n{color:#b45309}.r{color:#8250df}
+.tags{display:flex;gap:6px;margin:10px 0;font-size:12px}.tags span{padding:2px 8px;border:1px solid}
+.ok{color:#1a7f37}.warn{color:#b45309}.err{color:#cf222e}.btn{background:#dcdce0;border-color:#d0d0d5!important;color:#1a1a1a}
+.card{background:#ececef;border:1px solid #e5e5e5;padding:8px}.inner{background:#dcdce0;border:1px solid #e5e5e5;margin-top:6px;padding:6px}
+</style>
+<nav><div class="new">+ New chat</div><div class="cur">Selected</div><div class="dim">Projects</div><div class="dim">Artifacts</div><div class="dimmer">Recents</div></nav>
+<main><div class="bubble">A message in a bubble</div>
+<p>Body text with a <a href="#" id="link">link</a>, <span class="visited">visited</span> and <span class="dim">dim</span> / <span class="dimmer">dimmer</span> text. <span id="sel">Highlighted text here</span></p>
+<pre><span class="k">const</span> <span class="v">theme</span> = <span class="s">"valkyrja"</span>; <span class="dimmer">// note</span>
+<span class="n">42</span> <span class="r">return</span> theme;</pre>
+<div class="tags"><span class="ok">ok</span><span class="warn">warning</span><span class="err">error</span><span class="btn">button</span></div>
+<div class="card">Card on the page<div class="inner">Raised panel inside the card</div></div></main></html>

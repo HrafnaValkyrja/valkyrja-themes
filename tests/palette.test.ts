@@ -1,90 +1,92 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 
-import {familyOf, mapBackground, mapBorder, mapForeground, mapShadow} from '../src/palette';
+import {DEFAULT_THEME_ID, THEMES, activeTokens, familyOf, mapBackground, mapBorder, mapForeground, mapShadow, setActiveTheme} from '../src/palette';
+import type {HSLA} from '../src/palette';
 
-test('white and black pages both become a night sky, not true black', () => {
-    for (const l of [0, 1]) {
-        const page = mapBackground({h: 0, s: 0, l, a: 1}).l;
-        assert.ok(page >= 0.05 && page < 0.08, `page ${l}`);
-    }
-});
+function hex({h, s, l}: HSLA): string {
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return '#' + [r, g, b].map((v) => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('');
+}
 
-test('no neutral surface is lighter than the top surface tier, light or dark', () => {
-    for (let l = 0; l <= 1; l += 0.05) {
-        assert.ok(mapBackground({h: 0, s: 0, l, a: 1}).l <= 0.25 + 1e-9, `grey ${l}`);
-    }
-});
+const grey = (l: number): HSLA => ({h: 0, s: 0, l, a: 1});
 
-test('light greys stay apart as raised tiers', () => {
-    const page = mapBackground({h: 0, s: 0, l: 1, a: 1}).l;
-    const card = mapBackground({h: 0, s: 0, l: 0.96, a: 1}).l;
-    const panel = mapBackground({h: 0, s: 0, l: 0.92, a: 1}).l;
-    assert.ok(card - page > 0.04);
-    assert.ok(panel - card > 0.015);
-});
-
-test('a dark site keeps its own surface steps', () => {
-    // claude.ai dark: sidebar, page, card
-    const [side, page, card] = [0.12, 0.145, 0.185].map((l) => mapBackground({h: 60, s: 0.03, l, a: 1}).l);
-    assert.ok(page - side >= 0.018);
-    assert.ok(card - page >= 0.018);
-});
-
-test('a structure line is clearly lighter than the top surface tier', () => {
-    for (const l of [0, 0.5, 0.9, 1]) {
-        assert.ok(mapBorder({h: 0, s: 0, l, a: 1}).l >= 0.25 + 0.11, `line ${l}`);
-    }
-});
-
-test('a dark blue-grey from a site dark theme is a neutral indigo surface', () => {
-    // GitHub dark canvas #0d1117
-    const out = mapBackground({h: 216, s: 0.28, l: 0.07, a: 1});
-    assert.equal(out.h, 247);
-    assert.ok(out.l < 0.12);
-});
-
-test('hue families: red is pink, green and blue are cyan, violet is indigo, yellow is ice', () => {
-    assert.equal(familyOf(0), 'pink');
-    assert.equal(familyOf(350), 'pink');
-    assert.equal(familyOf(15), 'ice');
-    assert.equal(familyOf(45), 'ice');
-    assert.equal(familyOf(130), 'cyan');
-    assert.equal(familyOf(210), 'cyan');
-    assert.equal(familyOf(270), 'indigo');
-});
-
-test('black and near-white text become readable body text', () => {
-    for (const input of [{h: 0, s: 0, l: 0}, {h: 210, s: 0.67, l: 0.96}]) {
-        const out = mapForeground({...input, a: 1});
-        assert.equal(out.h, 211);
-        assert.ok(out.l > 0.85);
-    }
-});
-
-test('saturated text is never darker than readable on black', () => {
-    for (let h = 0; h < 360; h += 15) {
-        for (const l of [0.1, 0.3, 0.5, 0.7]) {
-            assert.ok(mapForeground({h, s: 0.9, l, a: 1}).l >= 0.6, `h${h} l${l}`);
+test('every theme has every token as a six-digit hex colour', () => {
+    const names = Object.keys(THEMES[DEFAULT_THEME_ID]).sort();
+    for (const [id, theme] of Object.entries(THEMES)) {
+        assert.deepEqual(Object.keys(theme).sort(), names, id);
+        for (const [name, value] of Object.entries(theme)) {
+            if (name !== 'label') {
+                assert.match(value, /^#[0-9a-f]{6}$/, `${id}.${name}`);
+            }
         }
     }
 });
 
-test('a faint translucent hairline gets more opacity', () => {
-    const out = mapBorder({h: 0, s: 0, l: 0, a: 0.1});
-    assert.ok(out.a! > 0.25 && out.a! < 1);
-    assert.equal(mapBorder({h: 0, s: 0, l: 0, a: 1}).a, 1);
+for (const id of Object.keys(THEMES)) {
+    test(`${id}: a white page is base, body text is text, a blue link is accent`, () => {
+        setActiveTheme(id);
+        const t = activeTokens();
+        assert.equal(hex(mapBackground(grey(1))), t.base);
+        assert.equal(hex(mapForeground(grey(0))), t.text);
+        assert.equal(hex(mapForeground(grey(1))), t.text);
+        assert.equal(hex(mapForeground({h: 215, s: 0.9, l: 0.45, a: 1})), t.accent);
+        assert.equal(hex(mapShadow({h: 0, s: 0, l: 0, a: 1})), t.line);
+    });
+}
+
+test('surfaces: light greys and dark-site steps land on the surface tokens', () => {
+    setActiveTheme('nott');
+    const t = activeTokens();
+    assert.equal(hex(mapBackground(grey(0.97))), t.s1);
+    assert.equal(hex(mapBackground(grey(0.92))), t.s2);
+    assert.equal(hex(mapBackground(grey(0.7))), t.s3);
+    // GitHub dark canvas #0d1117 is that site's page.
+    assert.equal(hex(mapBackground({h: 216, s: 0.28, l: 0.07, a: 1})), t.base);
+    assert.equal(hex(mapBackground(grey(0.12))), t.s1);
+    assert.equal(hex(mapBackground(grey(0.22))), t.s3);
 });
 
-test('a warm bar becomes an indigo bar, a red one stays pink', () => {
-    // Hacker News header #ff6600
-    assert.equal(mapBackground({h: 24, s: 1, l: 0.5, a: 1}).h, 247);
-    assert.equal(mapBackground({h: 0, s: 1, l: 0.5, a: 1}).h, 331);
+test('dim text steps down to text2 and text3', () => {
+    setActiveTheme('nott');
+    const t = activeTokens();
+    assert.equal(hex(mapForeground(grey(0.2))), t.text);
+    assert.equal(hex(mapForeground(grey(0.4))), t.text2);
+    assert.equal(hex(mapForeground(grey(0.6))), t.text2);
+    assert.equal(hex(mapForeground(grey(0.5))), t.text3);
 });
 
-test('a faint black drop shadow becomes a visible indigo glow', () => {
-    const glow = mapShadow({h: 0, s: 0, l: 0, a: 0.12});
-    assert.equal(glow.h, 247);
-    assert.ok(glow.l >= 0.4);
-    assert.ok(glow.a! > 0.3);
+test('hue families keep colours apart', () => {
+    assert.equal(familyOf(0), 'bad');
+    assert.equal(familyOf(350), 'bad');
+    assert.equal(familyOf(30), 'warn');
+    assert.equal(familyOf(130), 'good');
+    assert.equal(familyOf(180), 'accent2');
+    assert.equal(familyOf(215), 'accent');
+    assert.equal(familyOf(280), 'accent3');
+});
+
+test('a saturated fill is a dim fill of its token hue', () => {
+    setActiveTheme('nott');
+    const out = mapBackground({h: 215, s: 0.9, l: 0.5, a: 1});
+    assert.ok(Math.abs(out.h - 218) < 3);
+    assert.ok(out.l <= 0.3);
+});
+
+test('borders: a faint light-site hairline is line, a mid grey is lineHi, a translucent one gets more opacity', () => {
+    setActiveTheme('nott');
+    const t = activeTokens();
+    assert.equal(hex(mapBorder(grey(1))), t.line);
+    assert.equal(hex(mapBorder(grey(0))), t.line);
+    assert.equal(hex(mapBorder(grey(0.5))), t.lineHi);
+    const faint = mapBorder({h: 0, s: 0, l: 0, a: 0.1});
+    assert.ok(faint.a! > 0.25 && faint.a! < 1);
+});
+
+test('an unknown theme id falls back to the default', () => {
+    setActiveTheme('no-such-theme');
+    assert.equal(activeTokens(), THEMES[DEFAULT_THEME_ID]);
 });

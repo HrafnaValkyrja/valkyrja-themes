@@ -9,6 +9,8 @@ import {indexSitesFixesConfig} from '../engine/generators/utils/parse';
 import type {SiteFixesIndex} from '../engine/generators/utils/parse';
 
 import chromeTheme from './chrome-theme.json';
+import {DEFAULT_THEME_ID, THEMES} from './palette';
+import {loadSettings, onSettingsChanged} from './settings';
 
 declare const browser: any;
 
@@ -75,10 +77,21 @@ browser.runtime.onMessage.addListener((message: {type: string; url: string}) => 
         .catch(() => null);
 });
 
-function applyChromeTheme(): void {
-    browser.theme.update(chromeTheme);
+// chrome-theme.json is drawn in the Valkyrja Night colours; each of them stands for a token of the chosen theme.
+const CHROME_TOKENS: Record<string, 'base' | 's1' | 's2' | 'text' | 'accent' | 'accent2' | 'lineHi'> = {
+    '#000000': 'base', '#0a0818': 's1', '#131029': 's2', '#dce8f5': 'text', '#4fe0ff': 'accent', '#8fd3ff': 'accent2', '#5b4bd6': 'lineHi',
+};
+
+async function applyChromeTheme(): Promise<void> {
+    const tokens = THEMES[(await loadSettings()).theme] ?? THEMES[DEFAULT_THEME_ID];
+    const json = JSON.stringify(chromeTheme).replace(/#[0-9a-f]{6}/gi, (hex) => {
+        const token = CHROME_TOKENS[hex.toLowerCase()];
+        return token ? tokens[token] : hex;
+    });
+    browser.theme.update(JSON.parse(json));
 }
 
+onSettingsChanged(applyChromeTheme);
 browser.runtime.onInstalled.addListener(applyChromeTheme);
 
 // First run: Firefox grants the all-sites permission at install unless the person unticked it.

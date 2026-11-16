@@ -1,13 +1,14 @@
 # Valkyrja Themes
 
-One Firefox add-on that turns every website into the Valkyrja Night palette: true black pages, indigo structure, cyan accents, pink only for errors. It also colours the browser window itself.
+One Firefox add-on that turns every website into a dark theme you choose in its popup: Nott (true black, the default), Valkyrja Night and nine more. The browser window takes the same colours. It also colours the browser window itself.
 
 It replaces the earlier per-site add-ons (Valkyrja Night for Claude, for GitHub) with a single engine, so a site changing its markup no longer breaks the theme.
 
 ## How it works
 
 - `engine/` is a copy of the dynamic-theme engine from [Dark Reader](https://github.com/darkreader/darkreader) (MIT). It reads a page's style sheets and rewrites every colour.
-- `src/palette.ts` decides what each colour becomes. It is the only place a colour is chosen.
+- `src/themes.json` holds the themes: each is a set of named colour tokens, the only place a colour is chosen.
+- `src/palette.ts` decides which token each page colour becomes.
 - `src/sites/` adds fonts and angular shapes on a few sites (claude.ai, GitHub, Google search). These modules never set a colour of their own.
 - The toolbar button opens a switch: on or off everywhere, and on or off for the current site.
 

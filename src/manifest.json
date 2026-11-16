@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Valkyrja Themes",
-  "version": "0.1.1",
-  "description": "Turns every website into the Valkyrja Night palette: true black, indigo structure, cyan accents.",
+  "version": "0.1.2",
+  "description": "Turns every website into a dark theme of your choice: Nott, Valkyrja Night and nine more.",
   "browser_specific_settings": {
     "gecko": {
       "id": "valkyrja-themes@hrafnavalkyrja.github.io",

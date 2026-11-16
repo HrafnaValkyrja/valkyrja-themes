@@ -1,10 +1,11 @@
 # Valkyrja Themes
 
-One Firefox add-on that turns every website into the Valkyrja Night palette. See `README.md` for the layout, the build and the check scripts.
+One Firefox add-on that turns every website into a chosen dark theme (Nott by default). See `README.md` for the layout, the build and the check scripts.
 
-- Every colour comes from `src/palette.ts`. Site modules in `src/sites/` set fonts and shapes only, never a colour.
+- Every colour comes from a theme token in `src/themes.json`; `src/palette.ts` maps page colours onto the tokens. `python3 tools/theme_sheet.py <outdir>` renders every theme and prints any colour that misses its token. Site modules in `src/sites/` set fonts and shapes only, never a colour.
 - `engine/` is a copy of Dark Reader's engine. Mark each change to it with `Valkyrja change:` and list the file in `THIRD-PARTY.md`.
 - Visual work is checked on a real render (`tools/`), not only by tests.
+- A colour change starts from a target sheet: named colour tokens and a mock page, drawn beside the guide themes and agreed by the owner. The mapping is then made to hit those tokens, and each render is compared with the sheet. No release of a colour change before that.
 - This repo is public: no personal details, local paths, machine names or session links in files, commits or issues.
 
 ## Agent skills
