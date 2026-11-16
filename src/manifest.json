@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Valkyrja Themes",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Turns every website into a dark theme of your choice: Nott, Valkyrja Night and nine more.",
   "browser_specific_settings": {
     "gecko": {
       "id": "valkyrja-themes@hrafnavalkyrja.github.io",
+      "update_url": "https://raw.githubusercontent.com/HrafnaValkyrja/valkyrja-themes/main/updates.json",
       "strict_min_version": "142.0",
       "data_collection_permissions": {
         "required": [

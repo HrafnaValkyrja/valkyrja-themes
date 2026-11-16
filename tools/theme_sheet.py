@@ -37,7 +37,7 @@ try:
     popup = driver.current_window_handle
     for theme in wanted:
         driver.switch_to.window(popup)
-        driver.execute_script("const s = document.getElementById('theme'); s.value = arguments[0]; s.dispatchEvent(new Event('change'));", theme)
+        driver.execute_script("document.querySelector(`#themes [data-theme=\"${arguments[0]}\"]`).click();", theme)
         time.sleep(1.5)
         driver.switch_to.window(page); time.sleep(0.5)
         driver.execute_script("getSelection().selectAllChildren(document.getElementById('sel'))")
@@ -46,5 +46,8 @@ try:
         near = lambda a, b: all(abs(int(a[i:i + 2], 16) - int(b[i:i + 2], 16)) <= 1 for i in (1, 3, 5))  # one step of rounding
         wrong = {k: (v, themes[theme][k]) for k, v in got.items() if not near(v, themes[theme][k])}
         print(theme, 'all tokens hit' if not wrong else f'MISS (got, token): {wrong}')
+    # The popup itself, with its grid of theme previews, wearing the last theme.
+    driver.switch_to.window(popup); driver.set_window_size(380, 620); time.sleep(0.5)
+    driver.save_screenshot(str(out / 'popup.png'))
 finally:
     driver.quit(); server.shutdown()
