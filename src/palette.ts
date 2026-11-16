@@ -31,6 +31,8 @@ export type ThemeTokens = Record<TokenName, string> & {label: string};
 export const THEMES = themesJson as Record<string, ThemeTokens>;
 export const DEFAULT_THEME_ID = 'nott';
 
+const MIN_ACCENT_BG_LIGHTNESS = 0.12;
+
 type RGB = [number, number, number];
 type Stop = [number, RGB];
 
@@ -79,6 +81,42 @@ interface Compiled {
     darkBg: Stop[];
     textDim: Stop[];
     border: Stop[];
+    fillMax: Record<TokenName, number>;
+}
+
+function rgbOfHsl({h, s, l}: HSLA): RGB {
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return [r + m, g + m, b + m];
+}
+
+/** WCAG relative luminance. */
+export function luminance(color: HSLA): number {
+    const [r, g, b] = rgbOfHsl(color).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** A fill carries the page's own light text, so it may be as bright as still leaves that text readable (about 5:1). */
+export const MAX_FILL_LUMINANCE = 0.16;
+
+/** The highest lightness at which a token's hue, at full token saturation, stays under the fill luminance limit. */
+function fillLightness(token: HSLA): number {
+    let low = MIN_ACCENT_BG_LIGHTNESS;
+    let high = token.l;
+    if (luminance(token) <= MAX_FILL_LUMINANCE) {
+        return high;
+    }
+    for (let i = 0; i < 20; i++) {
+        const mid = (low + high) / 2;
+        if (luminance({h: token.h, s: token.s, l: mid}) <= MAX_FILL_LUMINANCE) {
+            low = mid;
+        } else {
+            high = mid;
+        }
+    }
+    return low;
 }
 
 function compile(id: string): Compiled {
@@ -90,10 +128,15 @@ function compile(id: string): Compiled {
             hsl[name as TokenName] = hslOf(rgbOf(value));
         }
     }
+    const fillMax = {} as Record<TokenName, number>;
+    for (const name of Object.keys(hsl) as TokenName[]) {
+        fillMax[name] = fillLightness(hsl[name]);
+    }
     return {
         id: THEMES[id] ? id : DEFAULT_THEME_ID,
         tokens,
         hsl,
+        fillMax,
         // Light pages, by distance from white: white is the page, each grey step a raised surface.
         lightBg: [[0, rgb('base')], [0.03, rgb('s1')], [0.08, rgb('s2')], [0.18, rgb('s3')], [0.5, rgb('s3')]],
         // Dark pages, by lightness: the site's own page is the base and its own steps stay as steps.
@@ -147,10 +190,7 @@ function scale(x: number, inLow: number, inHigh: number, outLow: number, outHigh
     return ((x - inLow) * (outHigh - outLow)) / (inHigh - inLow) + outLow;
 }
 
-const MAX_ACCENT_BG_LIGHTNESS = 0.3;
-const MIN_ACCENT_BG_LIGHTNESS = 0.12;
-
-/** Backgrounds: neutrals land on base and the surface steps; saturated fills become dim fills of their token. */
+/** Backgrounds: neutrals land on base and the surface steps; saturated fills become deep, fully coloured fills of their token. */
 export function mapBackground({h, s, l, a}: HSLA): HSLA {
     const isDark = l < 0.5;
     const isPaleBlue = l > 0.8 && h > 200 && h < 280;
@@ -160,12 +200,15 @@ export function mapBackground({h, s, l, a}: HSLA): HSLA {
     if (s < 0.12 || isPaleBlue || isDarkTint || isFaintTint) {
         return {...(isDark ? ramp(l, active.darkBg) : ramp(1 - l, active.lightBg)), a};
     }
-    const token = active.hsl[familyOf(h)];
-    // The fill carries the page's own (light) text, so it stays well below the token's lightness.
+    const family = familyOf(h);
+    const token = active.hsl[family];
+    // The fill carries the page's own (light) text: a strong fill is the token's colour at the brightest
+    // lightness that keeps that text readable; pale tints and very dark fills step down from there.
+    const max = active.fillMax[family];
     const lx = isDark ?
-        scale(l, 0, 0.5, 0.06, MAX_ACCENT_BG_LIGHTNESS) :
-        scale(l, 0.5, 1, MAX_ACCENT_BG_LIGHTNESS, MIN_ACCENT_BG_LIGHTNESS);
-    return {h: token.h, s: Math.min(s, token.s + 0.1), l: lx, a};
+        scale(l, 0, 0.5, 0.06, max) :
+        scale(l, 0.5, 1, max, MIN_ACCENT_BG_LIGHTNESS);
+    return {h: token.h, s: s >= 0.5 ? token.s : Math.min(s + 0.2, token.s), l: lx, a};
 }
 
 /** Text: neutrals become text, text2 or text3 by their strength; saturated text becomes its token. */

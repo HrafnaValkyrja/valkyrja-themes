@@ -61,3 +61,9 @@ button:not([role="switch"]), [role="button"]:not([role="switch"]),
 /* inline code: flat, no outline */
 :not(pre) > code { border: 0 !important; box-shadow: none !important; }
 .hljs-comment, .hljs-quote { font-style: italic; }
+
+/* The sidebar is a raised surface with a visible edge, so it stays apart from the page on true black. */
+nav[aria-label="Sidebar"] {
+  background-color: var(--vk-surface) !important;
+  border-right: 1px solid var(--vk-line) !important;
+}

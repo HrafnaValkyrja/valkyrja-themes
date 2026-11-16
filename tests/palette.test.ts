@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 
-import {DEFAULT_THEME_ID, THEMES, activeTokens, familyOf, mapBackground, mapBorder, mapForeground, mapShadow, setActiveTheme} from '../src/palette';
+import {DEFAULT_THEME_ID, MAX_FILL_LUMINANCE, THEMES, activeTokens, luminance, familyOf, mapBackground, mapBorder, mapForeground, mapShadow, setActiveTheme} from '../src/palette';
 import type {HSLA} from '../src/palette';
 
 function hex({h, s, l}: HSLA): string {
@@ -69,11 +69,26 @@ test('hue families keep colours apart', () => {
     assert.equal(familyOf(280), 'accent3');
 });
 
-test('a saturated fill is a dim fill of its token hue', () => {
-    setActiveTheme('nott');
-    const out = mapBackground({h: 215, s: 0.9, l: 0.5, a: 1});
-    assert.ok(Math.abs(out.h - 218) < 3);
-    assert.ok(out.l <= 0.3);
+for (const id of Object.keys(THEMES)) {
+    test(`${id}: a saturated fill is a deep, fully coloured fill of its token that light text reads on`, () => {
+        setActiveTheme(id);
+        for (const h of [0, 40, 130, 180, 215, 280]) {
+            const out = mapBackground({h, s: 0.9, l: 0.5, a: 1});
+            assert.ok(out.s >= 0.6, `${id} hue ${h} saturation ${out.s}`);
+            assert.ok(luminance(out) <= MAX_FILL_LUMINANCE + 0.005, `${id} hue ${h}`);
+            assert.ok(out.l >= 0.2, `${id} hue ${h} lightness ${out.l}`);
+        }
+    });
+}
+
+test('accents are vivid: every accent token is strongly saturated', () => {
+    for (const id of Object.keys(THEMES)) {
+        setActiveTheme(id);
+        for (const h of [0, 40, 130, 180, 215, 280]) {
+            const out = mapForeground({h, s: 0.9, l: 0.45, a: 1});
+            assert.ok(out.s >= 0.85, `${id} hue ${h} saturation ${out.s}`);
+        }
+    }
 });
 
 test('borders: a faint light-site hairline is line, a mid grey is lineHi, a translucent one gets more opacity', () => {
