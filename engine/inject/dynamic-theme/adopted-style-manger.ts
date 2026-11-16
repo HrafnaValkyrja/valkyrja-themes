@@ -34,6 +34,17 @@ const createOverrideSheet: () => CSSStyleSheet = isFirefox ?
     } :
     () => new CSSStyleSheet();
 
+// Valkyrja change: in Firefox the adopted sheets array belongs to the page, and the page's own array methods
+// cannot call a content-script callback ("Permission denied to access object"). Copy by index before filtering.
+function copyAdoptedSheets(node: Document | ShadowRoot): CSSStyleSheet[] {
+    const source = getAdoptedSheets(node);
+    const copy: CSSStyleSheet[] = [];
+    for (let i = 0; i < source.length; i++) {
+        copy.push(source[i]);
+    }
+    return copy;
+}
+
 function isDarkReaderSheet(sheet: CSSStyleSheet): boolean {
     let result = drSheetCheckResults.get(sheet);
     if (result != null) {
@@ -111,7 +122,7 @@ export function createAdoptedStyleSheetOverride(node: Document | ShadowRoot): Ad
         if (count === 1) {
             // MS Copilot issue, where there is an empty `:root {}` style at the beginning.
             // Counting all the rules for all the shadow DOM elements can be expensive.
-            const sourceSheet = getAdoptedSheets(node).find((s) => !overrides.has(s) && !isDarkReaderSheet(s));
+            const sourceSheet = copyAdoptedSheets(node).find((s) => !overrides.has(s) && !isDarkReaderSheet(s));
             const rule = sourceSheet?.cssRules[0];
             return rule instanceof CSSStyleRule ? rule.style.length : count;
         }
@@ -177,7 +188,7 @@ export function createAdoptedStyleSheetOverride(node: Document | ShadowRoot): Ad
         callbackRequested = true;
         queueMicrotask(() => {
             callbackRequested = false;
-            const sheets = getAdoptedSheets(node).filter((s) => !overrides.has(s) && !isDarkReaderSheet(s));
+            const sheets = copyAdoptedSheets(node).filter((s) => !overrides.has(s) && !isDarkReaderSheet(s));
             sheets.forEach((sheet) => overridesBySource.delete(sheet));
             callback(sheets);
         });
