@@ -28,6 +28,7 @@ The scripts in `tools/` drive a headless Firefox with a throwaway profile (they 
 - `tools/shoot.py <out-dir> <url>...` saves screenshots of real pages.
 - `tools/switch_check.py` checks the on/off switch.
 - `tools/font_check.py <url>...` reports the loaded fonts and saves a screenshot.
+- `tools/window_shot.py <out.png>` saves a picture of the browser window itself (tabs, toolbar).
 - `tools/fixture_shot.py <dir> <host> <out.png>` renders a saved page under the host name it came from.
 
 ## Status
