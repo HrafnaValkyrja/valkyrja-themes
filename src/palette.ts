@@ -138,3 +138,16 @@ export function mapBorder({h, s, l, a}: HSLA): HSLA {
     const sx = family === 'indigo' ? 0.63 : family === 'ice' ? 0.6 : 1;
     return {h: HUE[family], s: sx, l: scale(l, 0, 1, 0.62, 0.38), a};
 }
+
+/**
+ * Shadows: a dark drop shadow is invisible on a black page, so a neutral shadow becomes a soft indigo glow.
+ * That keeps shadow-only cards and buttons apart from the page. Coloured shadows (focus rings) keep their family.
+ */
+export function mapShadow({h, s, l, a}: HSLA): HSLA {
+    const isNeutral = l < 0.2 || s < 0.24;
+    if (isNeutral) {
+        return {h: HUE.indigo, s: 0.63, l: 0.5, a: liftAlpha(a)};
+    }
+    const family = familyOf(h);
+    return {h: HUE[family], s: family === 'indigo' ? 0.63 : s, l: 0.55, a};
+}

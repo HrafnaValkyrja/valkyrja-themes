@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 
-import {familyOf, mapBackground, mapBorder, mapForeground} from '../src/palette';
+import {familyOf, mapBackground, mapBorder, mapForeground, mapShadow} from '../src/palette';
 
 test('white page becomes true black', () => {
     assert.equal(mapBackground({h: 0, s: 0, l: 1, a: 1}).l, 0);
@@ -62,4 +62,11 @@ test('a warm bar becomes an indigo bar, a red one stays pink', () => {
     // Hacker News header #ff6600
     assert.equal(mapBackground({h: 24, s: 1, l: 0.5, a: 1}).h, 247);
     assert.equal(mapBackground({h: 0, s: 1, l: 0.5, a: 1}).h, 331);
+});
+
+test('a faint black drop shadow becomes a visible indigo glow', () => {
+    const glow = mapShadow({h: 0, s: 0, l: 0, a: 0.12});
+    assert.equal(glow.h, 247);
+    assert.ok(glow.l >= 0.4);
+    assert.ok(glow.a! > 0.3);
 });

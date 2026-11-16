@@ -6,7 +6,7 @@ import type {RGBA, HSLA} from '../../utils/color';
 import {parseToHSLWithCache, rgbToHSL, hslToRGB, rgbToString, rgbToHexString} from '../../utils/color';
 import {scale} from '../../utils/math';
 // Valkyrja change: dark-scheme colours are mapped into the Valkyrja palette (see src/palette.ts).
-import {mapBackground, mapForeground, mapBorder} from '../../../src/palette';
+import {mapBackground, mapForeground, mapBorder, mapShadow} from '../../../src/palette';
 
 
 type HSLModifyFunction = ((hsl: HSLA) => HSLA) | ((hsl: HSLA, pole: HSLA) => HSLA) | ((hsl: HSLA, pole: HSLA, anotherPole: HSLA) => HSLA);
@@ -314,7 +314,8 @@ export function modifyBorderColor(rgb: RGBA, theme: Theme, shouldRegisterColorVa
 }
 
 export function modifyShadowColor(rgb: RGBA, theme: Theme): string {
-    return modifyBackgroundColor(rgb, theme);
+    // Valkyrja change: shadows get their own mapping (an indigo glow) instead of the background one.
+    return modifyColorWithCache(rgb, theme, mapShadow);
 }
 
 export function modifyGradientColor(rgb: RGBA, theme: Theme): string {

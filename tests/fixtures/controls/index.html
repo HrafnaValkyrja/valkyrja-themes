@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Controls on a light page</title>
+<style>
+  body { margin: 40px; background: #faf9f5; color: #1f1e1d; font: 16px sans-serif; }
+  .row { display: flex; gap: 16px; margin: 0 0 24px; align-items: center; }
+  button, input, .card { padding: 10px 18px; border-radius: 8px; font: inherit; }
+  .faint { background: #fff; border: 1px solid rgba(31, 30, 29, 0.15); }
+  .hair { background: #fff; border: 0.5px solid rgba(31, 30, 29, 0.15); }
+  .none { background: #fff; border: 0; }
+  .shadow { background: #fff; border: 0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+  .grey { background: #f0eee6; border: 0; }
+  .solid { background: #1f1e1d; color: #fff; border: 0; }
+</style>
+<div class="row"><button class="faint">Faint border</button><button class="hair">Hairline border</button><button class="none">No border</button><button class="shadow">Shadow only</button><button class="grey">Grey fill</button><button class="solid">Dark fill</button></div>
+<div class="row"><input class="faint" placeholder="Faint border"><input class="none" placeholder="No border"><input class="shadow" placeholder="Shadow only"></div>
+<div class="row"><div class="card faint">Card, faint border</div><div class="card none">Card, no border</div><div class="card shadow">Card, shadow only</div></div>
