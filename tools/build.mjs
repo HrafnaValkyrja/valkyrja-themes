@@ -35,3 +35,4 @@ for (const file of ['manifest.json', 'popup.html']) {
     fs.copyFileSync(path.join(root, 'src', file), path.join(out, file));
 }
 fs.copyFileSync(path.join(root, 'engine/LICENSE'), path.join(out, 'ENGINE-LICENSE.txt'));
+fs.copyFileSync(path.join(root, 'engine/config/dynamic-theme-fixes.config'), path.join(out, 'dynamic-theme-fixes.config'));

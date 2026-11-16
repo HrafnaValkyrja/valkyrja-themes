@@ -12,4 +12,6 @@ Changes made to the copied files are marked in the source with a `Valkyrja chang
 - `engine/inject/dynamic-theme/index.ts`: the page-world stylesheet proxy is always started through a dedicated content script instead of an inline script.
 - `engine/inject/dynamic-theme/adopted-style-manger.ts`: the page's adopted style sheet list is copied by index before filtering, so sheets a page component adds later are re-coloured in Firefox.
 
+`engine/config/dynamic-theme-fixes.config` is Dark Reader's per-site fixes list, unchanged.
+
 Everything outside `engine/` is original to this project and licensed under MPL-2.0.

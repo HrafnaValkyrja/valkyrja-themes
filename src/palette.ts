@@ -81,7 +81,8 @@ export function mapBackground({h, s, l, a}: HSLA): HSLA {
             MAX_NEUTRAL_BG_LIGHTNESS * Math.sqrt(clamp((1 - l) / 0.5, 0, 1));
         return {h: HUE.indigo, s: SURFACE_SATURATION, l: lx, a};
     }
-    const family = familyOf(h);
+    // Warm fills (orange and yellow bars, banners) become indigo: ice is a text colour, and as a fill it reads as dull slate.
+    const family = familyOf(h) === 'ice' ? 'indigo' : familyOf(h);
     const lx = isDark ?
         scale(l, 0, 0.5, 0, MAX_ACCENT_BG_LIGHTNESS) :
         scale(l, 0.5, 1, MAX_ACCENT_BG_LIGHTNESS, 0.05);

@@ -2,11 +2,13 @@
  * Content script: runs the colour engine on every page with the Valkyrja theme.
  */
 import {DEFAULT_THEME} from '../engine/defaults';
-import type {Theme} from '../engine/definitions';
-import {createOrUpdateDynamicThemeInternal, removeDynamicTheme} from '../engine/inject/dynamic-theme';
+import type {DynamicThemeFix, Theme} from '../engine/definitions';
+import {createOrUpdateDynamicTheme, createOrUpdateDynamicThemeInternal, removeDynamicTheme} from '../engine/inject/dynamic-theme';
 
 import {PALETTE} from './palette';
 import {isOnFor, loadSettings, onSettingsChanged} from './settings';
+
+declare const browser: any;
 
 const theme: Theme = {
     ...DEFAULT_THEME,
@@ -56,10 +58,44 @@ function setRunning(on: boolean): void {
     }
     running = on;
     if (on) {
-        createOrUpdateDynamicThemeInternal(theme, null, isIFrame);
+        start();
     } else {
         removeDynamicTheme();
     }
+}
+
+// How long the first colouring waits for the per-site fixes before it goes ahead without them.
+const FIXES_WAIT_MS = 120;
+let fixes: Promise<DynamicThemeFix[] | null> | null = null;
+
+function loadFixes(): Promise<DynamicThemeFix[] | null> {
+    fixes ??= browser.runtime.sendMessage({type: 'get-fixes', url: location.href}).catch(() => null);
+    return fixes!;
+}
+
+function apply(list: DynamicThemeFix[] | null): void {
+    if (!running) {
+        return;
+    }
+    if (list) {
+        createOrUpdateDynamicTheme(theme, list, isIFrame);
+    } else {
+        createOrUpdateDynamicThemeInternal(theme, null, isIFrame);
+    }
+}
+
+function start(): void {
+    let started = false;
+    const timer = setTimeout(() => {
+        started = true;
+        apply(null);
+    }, FIXES_WAIT_MS);
+    loadFixes().then((list) => {
+        clearTimeout(timer);
+        if (!started || list) {
+            apply(list);
+        }
+    });
 }
 
 async function sync(): Promise<void> {

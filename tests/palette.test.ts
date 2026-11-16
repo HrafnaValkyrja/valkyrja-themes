@@ -56,3 +56,9 @@ test('a faint translucent hairline gets more opacity', () => {
     assert.ok(out.a! > 0.25 && out.a! < 1);
     assert.equal(mapBorder({h: 0, s: 0, l: 0, a: 1}).a, 1);
 });
+
+test('a warm bar becomes an indigo bar, a red one stays pink', () => {
+    // Hacker News header #ff6600
+    assert.equal(mapBackground({h: 24, s: 1, l: 0.5, a: 1}).h, 247);
+    assert.equal(mapBackground({h: 0, s: 1, l: 0.5, a: 1}).h, 331);
+});
