@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Valkyrja Themes",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Turns every website into a dark theme of your choice: Nott, Valkyrja Night and nine more.",
   "browser_specific_settings": {
     "gecko": {

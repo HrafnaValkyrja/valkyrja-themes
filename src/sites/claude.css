@@ -59,7 +59,7 @@ button:not([role="switch"]), [role="button"]:not([role="switch"]),
 }
 
 /* inline code: flat, no outline */
-:not(pre) > code { border: 0 !important; box-shadow: none !important; }
+:root:root:root :not(pre) > code { border: 0 !important; box-shadow: none !important; color: var(--vk-accent) !important; background-color: var(--vk-surface) !important; }
 .hljs-comment, .hljs-quote { font-style: italic; }
 
 /* The sidebar is a raised surface with a visible edge, so it stays apart from the page on true black. */
