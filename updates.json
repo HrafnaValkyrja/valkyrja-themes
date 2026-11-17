@@ -11,6 +11,11 @@
           "version": "0.1.5",
           "update_link": "https://github.com/HrafnaValkyrja/valkyrja-themes/releases/download/v0.1.5/valkyrja-themes-0.1.5.xpi",
           "update_hash": "sha256:1ab6d36242ee21fc2068f4519d3d33465bb1a45480dcbc6528c3cde5156d4db1"
+        },
+        {
+          "version": "0.1.6",
+          "update_link": "https://github.com/HrafnaValkyrja/valkyrja-themes/releases/download/v0.1.6/valkyrja-themes-0.1.6.xpi",
+          "update_hash": "sha256:07ad73bb4bf13b4fbb575c81a940c1cf4e5ca55a6d7a0de338664d0d4dd221e3"
         }
       ]
     }
