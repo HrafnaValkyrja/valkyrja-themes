@@ -67,3 +67,6 @@ nav[aria-label="Sidebar"] {
   background-color: var(--vk-surface) !important;
   border-right: 1px solid var(--vk-line) !important;
 }
+
+/* The site's main-action buttons (orange brand fill) wear the theme accent, deepened so light text reads on it. Theme tokens only. */
+[class*="bg-fill-brand"] { background-color: color-mix(in srgb, var(--vk-accent) 55%, #000) !important; }
